@@ -19,7 +19,7 @@ namespace Eduraise.Controllers
         {
             var optionsBuilder = new DbContextOptionsBuilder<EduraiseContext>();
             var options = optionsBuilder
-                .UseSqlServer(@"data source=DESKTOP-H5O6AGN\SQLEXPRESS;initial catalog=Eduraise;integrated security=True;MultipleActiveResultSets=True;App=EntityFramework")
+                .UseSqlServer(@"data source=COMPUTER;initial catalog=Eduraise;integrated security=True;MultipleActiveResultSets=True;App=EntityFramework")
                 .Options;
   
             _context = new EduraiseContext(options);
