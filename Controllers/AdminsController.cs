@@ -23,12 +23,14 @@ namespace Eduraise.Controllers
                 .Options;
   
             _context = new EduraiseContext(options);
+         
         }
 
         // GET: api/Admins
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Admins>>> GetAdmins()
         {
+	      
             return await _context.Admins.ToListAsync();
         }
 
@@ -37,7 +39,7 @@ namespace Eduraise.Controllers
         public async Task<ActionResult<Admins>> GetAdmins(int id)
         {
             var admins = await _context.Admins.FindAsync(id);
-
+          
             if (admins == null)
             {
                 return NotFound();

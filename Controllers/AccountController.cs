@@ -22,15 +22,15 @@ namespace Eduraise.Controllers
 		{
 			var optionsBuilder = new DbContextOptionsBuilder<EduraiseContext>();
 			var options = optionsBuilder
-				.UseSqlServer(@"data source=DESKTOP-H5O6AGN\SQLEXPRESS;initial catalog=Eduraise;integrated security=True;MultipleActiveResultSets=True;App=EntityFramework")
+				.UseSqlServer(@"data source=COMPUTER;initial catalog=Eduraise;integrated security=True;MultipleActiveResultSets=True;App=EntityFramework")
 				.Options;
 			_context = new EduraiseContext(options);
-		}
+			}
 
 		[HttpPost("/token")]
-		public IActionResult Token(string username, string password)
+		public IActionResult Token([FromForm] Admins admin)
 		{
-			var identity = GetIdentity(username, password);
+			var identity = GetIdentity(admin.AdminEmail, admin.AdminPassword);
 			if (identity == null)
 			{
 				return BadRequest(new { errorText = "Invalid username or password." });
@@ -58,7 +58,9 @@ namespace Eduraise.Controllers
 
 		private ClaimsIdentity GetIdentity(string username, string password)
 		{
-			var person = _context.Admins.FirstOrDefault(x => x.AdminEmail == username && x.AdminPassword == password);
+		
+			
+			var person = _context.Admins.FirstOrDefault(x => x.AdminEmail == username && x.AdminPassword==password);
 
 			if (person != null)
 			{
