@@ -22,7 +22,7 @@ namespace Eduraise.Controllers
 		{
 			var optionsBuilder = new DbContextOptionsBuilder<EduraiseContext>();
 			var options = optionsBuilder
-				.UseSqlServer(@"Data Source=COMPUTER;Initial Catalog=Eduraise;Integrated Security=True")
+				.UseSqlServer(@"Data Source=DESKTOP-6BABV49;Initial Catalog=dbo_CMS;integrated security=True;MultipleActiveResultSets=True;App=EntityFramework")
 				.Options;
 			_context = new EduraiseContext(options);
 			}

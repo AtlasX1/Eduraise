@@ -19,7 +19,7 @@ namespace Eduraise.Controllers
         {
             var optionsBuilder = new DbContextOptionsBuilder<EduraiseContext>();
             var options = optionsBuilder
-                .UseSqlServer(@"Data Source=COMPUTER;Initial Catalog=Eduraise;Integrated Security=True")
+                .UseSqlServer(@"Data Source=DESKTOP-6BABV49;Initial Catalog=dbo_CMS;integrated security=True;MultipleActiveResultSets=True;App=EntityFramework")
                 .Options;
   
             _context = new EduraiseContext(options);
@@ -32,6 +32,21 @@ namespace Eduraise.Controllers
         {
 	      
             return await _context.Admins.ToListAsync();
+        }
+
+        // GET: api/Admins/VerifiedCourses
+        [HttpGet("CoursesList")]
+        public async Task<ActionResult<IEnumerable<Courses>>> GetVerifiedCourses()
+        {
+            var courses = await _context.Courses.Where(c => c.IsVerified == true).ToListAsync();
+            return courses;
+        }
+
+        [HttpGet("CoursesList/NotVerifiedCourses")]
+        public async Task<ActionResult<IEnumerable<Courses>>> GetNotVerifiedCourses()
+        {
+            var courses = await _context.Courses.Where(c => c.IsVerified == false).ToListAsync();
+            return courses;
         }
 
         // GET: api/Admins/5

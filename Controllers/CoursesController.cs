@@ -17,12 +17,7 @@ namespace Eduraise.Controllers
 
         public CoursesController(EduraiseContext context)
         {
-	        var optionsBuilder = new DbContextOptionsBuilder<EduraiseContext>();
-	        var options = optionsBuilder
-		        .UseSqlServer(@"Data Source=COMPUTER;Initial Catalog=Eduraise;Integrated Security=True")
-		        .Options;
-
-	        _context = new EduraiseContext(options);
+            _context = context;
         }
 
         // GET: api/Courses
@@ -44,6 +39,20 @@ namespace Eduraise.Controllers
             }
 
             return courses;
+        }
+
+        // GET: api/Courses/5/Blocks
+        [HttpGet("{courseId}/Blocks")]
+        public async Task<ActionResult<IEnumerable<Block>>> GetBlocks(int courseId)
+        {
+            var blocks = await _context.Block.Where( b => b.CourseId == courseId).ToListAsync();
+
+            if (blocks == null)
+            {
+                return NotFound();
+            }
+
+            return blocks;
         }
 
         // PUT: api/Courses/5
@@ -81,12 +90,18 @@ namespace Eduraise.Controllers
         // POST: api/Courses
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
+       
         [HttpPost]
         public async Task<ActionResult<Courses>> PostCourses(Courses courses)
         {
             _context.Courses.Add(courses);
+            _context.Block.Add(courses.Block);
             await _context.SaveChangesAsync();
 
+            //make a post request to form the block body and then to form a lesson body
+            //The name of the action to use for generating the URL.
+            //The route data to use for generating the URL.
+            //The content value to format in the entity body.
             return CreatedAtAction("GetCourses", new { id = courses.CourseId }, courses);
         }
 

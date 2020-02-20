@@ -11,56 +11,62 @@ namespace Eduraise.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class TeachersController : ControllerBase
+    public class BlocksController : ControllerBase
     {
         private readonly EduraiseContext _context;
 
-        public TeachersController(EduraiseContext context)
+        public BlocksController(EduraiseContext context)
         {
             _context = context;
         }
 
-        // GET: api/Teachers
+        // GET: api/Blocks
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Teachers>>> GetTeachers()
+        public async Task<ActionResult<IEnumerable<Block>>> GetBlock()
         {
-            return await _context.Teachers.ToListAsync();
+            return await _context.Block.ToListAsync();
         }
 
-        // GET: api/Teachers/5
+        // GET: api/Blocks/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Teachers>> GetTeachers(int id)
+        public async Task<ActionResult<Block>> GetBlock(int id)
         {
-            var teachers = await _context.Teachers.FindAsync(id);
+            var block = await _context.Block.FindAsync(id);
 
-            if (teachers == null)
+            if (block == null)
             {
                 return NotFound();
             }
 
-            return teachers;
+            return block;
         }
 
-        [HttpGet("getCourses/{teacher_id}")]
-        public async Task<ActionResult<IEnumerable<Courses>>> GetTeachersCourses(int teacher_id)
+        // GET: api/Blocks/5/Lessons
+        [HttpGet("{blockId}/Lessons")]
+        public async Task<ActionResult<IEnumerable<Lessons>>> GetLessons(int blockId)
         {
-            var courses = await _context.Courses.Where(c => c.TeachersId == teacher_id).ToListAsync();
+            var lessons = await _context.Lessons.Where(l => l.BlockId == blockId).ToListAsync();
 
-            return courses;
+            if (lessons == null)
+            {
+                return NotFound();
+            }
+
+            return lessons;
         }
 
-        // PUT: api/Teachers/5
+        // PUT: api/Blocks/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutTeachers(int id, Teachers teachers)
+        public async Task<IActionResult> PutBlock(int id, Block block)
         {
-            if (id != teachers.TeacherId)
+            if (id != block.BlockId)
             {
                 return BadRequest();
             }
 
-            _context.Entry(teachers).State = EntityState.Modified;
+            _context.Entry(block).State = EntityState.Modified;
 
             try
             {
@@ -68,7 +74,7 @@ namespace Eduraise.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!TeachersExists(id))
+                if (!BlockExists(id))
                 {
                     return NotFound();
                 }
@@ -81,37 +87,37 @@ namespace Eduraise.Controllers
             return NoContent();
         }
 
-        // POST: api/Teachers
+        // POST: api/Blocks
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
         [HttpPost]
-        public async Task<ActionResult<Teachers>> PostTeachers(Teachers teachers)
+        public async Task<ActionResult<Block>> PostBlock(Block block)
         {
-            _context.Teachers.Add(teachers);
+            _context.Block.Add(block);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetTeachers", new { id = teachers.TeacherId }, teachers);
+            return CreatedAtAction("GetBlock", new { id = block.BlockId }, block);
         }
 
-        // DELETE: api/Teachers/5
+        // DELETE: api/Blocks/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult<Teachers>> DeleteTeachers(int id)
+        public async Task<ActionResult<Block>> DeleteBlock(int id)
         {
-            var teachers = await _context.Teachers.FindAsync(id);
-            if (teachers == null)
+            var block = await _context.Block.FindAsync(id);
+            if (block == null)
             {
                 return NotFound();
             }
 
-            _context.Teachers.Remove(teachers);
+            _context.Block.Remove(block);
             await _context.SaveChangesAsync();
 
-            return teachers;
+            return block;
         }
 
-        private bool TeachersExists(int id)
+        private bool BlockExists(int id)
         {
-            return _context.Teachers.Any(e => e.TeacherId == id);
+            return _context.Block.Any(e => e.BlockId == id);
         }
     }
 }
