@@ -18,6 +18,7 @@ namespace Eduraise.Models
         public DateTime DataOfCreation { get; set; }
         public float? CourseRating { get; set; }
         public int TeachersId { get; set; }
+        public bool? IsVerified { get; set; }
 
         public virtual Teachers Teachers { get; set; }
         public virtual ICollection<Block> Block { get; set; }

@@ -32,7 +32,9 @@ namespace Eduraise.Models
             if (!optionsBuilder.IsConfigured)
             {
 
-                optionsBuilder.UseSqlServer("Server=COMPUTER;Initial Catalog=Eduraise;Integrated Security=True;");
+	            optionsBuilder
+		            .UseSqlServer(@"Data Source=COMPUTER;Initial Catalog=Eduraise;Integrated Security=True");
+		            
             }
         }
 
@@ -155,6 +157,8 @@ namespace Eduraise.Models
                 entity.Property(e => e.DataOfCreation)
                     .HasColumnName("data_of_creation")
                     .HasColumnType("date");
+
+                entity.Property(e => e.IsVerified).HasColumnName("isVerified");
 
                 entity.Property(e => e.TeachersId).HasColumnName("teachers_id");
 

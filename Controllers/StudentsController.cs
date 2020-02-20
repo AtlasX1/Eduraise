@@ -17,7 +17,12 @@ namespace Eduraise.Controllers
 
         public StudentsController(EduraiseContext context)
         {
-            _context = context;
+	        var optionsBuilder = new DbContextOptionsBuilder<EduraiseContext>();
+	        var options = optionsBuilder
+		        .UseSqlServer(@"Data Source=COMPUTER;Initial Catalog=Eduraise;Integrated Security=True")
+		        .Options;
+
+	        _context = new EduraiseContext(options);
         }
 
         // GET: api/Students
