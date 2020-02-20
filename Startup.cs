@@ -29,7 +29,10 @@ namespace Eduraise
 			/*services.AddDbContext<EduraiseContext>(opt =>
 				opt.UseInMemoryDatabase("Eduraise"));
 			services.AddControllers();*/
-
+			services.AddControllersWithViews()
+				.AddNewtonsoftJson(options =>
+					options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
+				);
 			services.AddDbContext<EduraiseContext>(options
 				=> options.UseSqlServer(Configuration.GetConnectionString("AppDBConnection")));
 

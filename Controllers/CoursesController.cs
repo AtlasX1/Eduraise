@@ -94,8 +94,15 @@ namespace Eduraise.Controllers
         [HttpPost]
         public async Task<ActionResult<Courses>> PostCourses(Courses courses)
         {
-            _context.Courses.Add(courses);
-            _context.Block.Add(courses.Block);
+	        _context.Courses.Add(courses);
+	        _context.Block.AddRange(courses.Block);
+	        foreach (var b in courses.Block)
+	        {
+		        b.CourseId = courses.CourseId;
+		        _context.Lessons.AddRange(b.Lessons);
+		        foreach (var l in b.Lessons)
+			        l.BlockId = b.BlockId;
+	        }
             await _context.SaveChangesAsync();
 
             //make a post request to form the block body and then to form a lesson body
