@@ -17,12 +17,7 @@ namespace Eduraise.Controllers
 
         public TeachersController(EduraiseContext context)
         {
-	        var optionsBuilder = new DbContextOptionsBuilder<EduraiseContext>();
-	        var options = optionsBuilder
-		        .UseSqlServer(@"Data Source=Computer;Initial Catalog=Eduraise;integrated security=True;MultipleActiveResultSets=True;App=EntityFramework")
-		        .Options;
-
-	        _context = new EduraiseContext(options);
+            _context = context;
         }
 
         // GET: api/Teachers
@@ -46,10 +41,10 @@ namespace Eduraise.Controllers
             return teachers;
         }
 
-        [HttpGet("getCourses/{teacher_id}")]
+        [HttpGet("{teacher_id}/AllCourses")]
         public async Task<ActionResult<IEnumerable<Courses>>> GetTeachersCourses(int teacher_id)
         {
-            var courses = await _context.Courses.Where(c => c.TeachersId == teacher_id).ToListAsync();
+            var courses = await _context.Courses.Where( c => c.TeachersId == teacher_id).ToListAsync();
 
             return courses;
         }

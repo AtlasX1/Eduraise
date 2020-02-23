@@ -17,12 +17,7 @@ namespace Eduraise.Controllers
 
         public LessonsController(EduraiseContext context)
         {
-	        var optionsBuilder = new DbContextOptionsBuilder<EduraiseContext>();
-	        var options = optionsBuilder
-		        .UseSqlServer(@"Data Source=Computer;Initial Catalog=Eduraise;integrated security=True;MultipleActiveResultSets=True;App=EntityFramework")
-		        .Options;
-
-	        _context = new EduraiseContext(options);
+            _context = context;
         }
 
         // GET: api/Lessons

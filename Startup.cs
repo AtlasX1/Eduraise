@@ -26,13 +26,21 @@ namespace Eduraise
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+			//services.AddCors(o => o.AddPolicy("MyPolicy", builder =>
+			//{
+			//	builder.AllowAnyOrigin()
+			//		   .AllowAnyMethod()
+			//		   .AllowAnyHeader();
+			//}));
 			/*services.AddDbContext<EduraiseContext>(opt =>
 				opt.UseInMemoryDatabase("Eduraise"));
 			services.AddControllers();*/
+
 			services.AddControllersWithViews()
 				.AddNewtonsoftJson(options =>
-					options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
-				);
+				options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
+			);
+
 			services.AddDbContext<EduraiseContext>(options
 				=> options.UseSqlServer(Configuration.GetConnectionString("AppDBConnection")));
 
@@ -59,12 +67,18 @@ namespace Eduraise
 				var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
 				c.IncludeXmlComments(xmlPath);
 			});
-			services.AddCors();
-        }
+			//services.AddCors();
+			services.AddCors(c =>
+			{
+				c.AddPolicy("AllowOrigin", options => options.AllowAnyOrigin());
+			});
+
+		}
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+			app.UseCors(options => options.AllowAnyOrigin());
 			if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -76,9 +90,9 @@ namespace Eduraise
 			//	c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
 			//});
 			app.UseHttpsRedirection();
-			app.UseCors(builder => builder.AllowAnyOrigin()
-				.AllowAnyMethod()
-				.AllowAnyHeader());
+			//app.UseCors(builder => builder.AllowAnyOrigin()
+			//	.AllowAnyMethod()
+			//	.AllowAnyHeader());
 			app.UseRouting();
 			app.UseAuthentication();
 			app.UseAuthorization();

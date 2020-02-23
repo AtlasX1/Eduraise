@@ -16,6 +16,7 @@ namespace Eduraise.Models
         }
 
         public virtual DbSet<Admins> Admins { get; set; }
+        public virtual DbSet<Answers> Answers { get; set; }
         public virtual DbSet<Block> Block { get; set; }
         public virtual DbSet<Categories> Categories { get; set; }
         public virtual DbSet<CourseCategory> CourseCategory { get; set; }
@@ -23,6 +24,7 @@ namespace Eduraise.Models
         public virtual DbSet<Courses> Courses { get; set; }
         public virtual DbSet<Lessons> Lessons { get; set; }
         public virtual DbSet<Marks> Marks { get; set; }
+        public virtual DbSet<Questions> Questions { get; set; }
         public virtual DbSet<Students> Students { get; set; }
         public virtual DbSet<Teachers> Teachers { get; set; }
         public virtual DbSet<Tests> Tests { get; set; }
@@ -32,7 +34,7 @@ namespace Eduraise.Models
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-                optionsBuilder.UseSqlServer("Server=DESKTOP-6BABV49;Initial Catalog=Eduraise;Integrated Security=True;");
+                optionsBuilder.UseSqlServer("Server=COMPUTER\\SQLEXPRESS;Initial Catalog=Eduraise;Integrated Security=True;");
             }
         }
 
@@ -55,6 +57,30 @@ namespace Eduraise.Models
                     .HasMaxLength(20);
 
                 entity.Property(e => e.IsEmailConfirmed).HasColumnName("isEmailConfirmed");
+            });
+
+            modelBuilder.Entity<Answers>(entity =>
+            {
+                entity.HasKey(e => e.AnswerId);
+
+                entity.Property(e => e.AnswerId)
+                    .HasColumnName("answer_id")
+                    .ValueGeneratedNever();
+
+                entity.Property(e => e.Content)
+                    .IsRequired()
+                    .HasColumnName("[content]")
+                    .HasColumnType("text");
+
+                entity.Property(e => e.IsCorrect).HasColumnName("is_correct");
+
+                entity.Property(e => e.QuestionId).HasColumnName("question_id");
+
+                entity.HasOne(d => d.Question)
+                    .WithMany(p => p.Answers)
+                    .HasForeignKey(d => d.QuestionId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Answers_Questions");
             });
 
             modelBuilder.Entity<Block>(entity =>
@@ -175,7 +201,10 @@ namespace Eduraise.Models
 
                 entity.Property(e => e.BlockId).HasColumnName("block_id");
 
-                entity.Property(e => e.Content).HasColumnName("content");
+                entity.Property(e => e.Content)
+                    .IsRequired()
+                    .HasColumnName("content")
+                    .HasColumnType("text");
 
                 entity.Property(e => e.LessonName)
                     .IsRequired()
@@ -184,23 +213,11 @@ namespace Eduraise.Models
 
                 entity.Property(e => e.LessonNumber).HasColumnName("lesson_number");
 
-                entity.Property(e => e.LessonType)
-                    .IsRequired()
-                    .HasColumnName("lesson_type")
-                    .HasMaxLength(10);
-
-                entity.Property(e => e.TestId).HasColumnName("test_id");
-
                 entity.HasOne(d => d.Block)
                     .WithMany(p => p.Lessons)
                     .HasForeignKey(d => d.BlockId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Lessons_Block");
-
-                entity.HasOne(d => d.Test)
-                    .WithMany(p => p.Lessons)
-                    .HasForeignKey(d => d.TestId)
-                    .HasConstraintName("FK_Lessons_Tests");
             });
 
             modelBuilder.Entity<Marks>(entity =>
@@ -220,6 +237,28 @@ namespace Eduraise.Models
                     .HasForeignKey(d => d.CourseId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Marks_Courses");
+            });
+
+            modelBuilder.Entity<Questions>(entity =>
+            {
+                entity.HasKey(e => e.QuestionId);
+
+                entity.Property(e => e.QuestionId)
+                    .HasColumnName("question_id")
+                    .ValueGeneratedNever();
+
+                entity.Property(e => e.Content)
+                    .IsRequired()
+                    .HasColumnName("[content]")
+                    .HasColumnType("text");
+
+                entity.Property(e => e.TestId).HasColumnName("test_id");
+
+                entity.HasOne(d => d.Test)
+                    .WithMany(p => p.Questions)
+                    .HasForeignKey(d => d.TestId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Questions_Tests");
             });
 
             modelBuilder.Entity<Students>(entity =>
@@ -249,9 +288,7 @@ namespace Eduraise.Models
                     .HasColumnName("student_password")
                     .HasMaxLength(20);
 
-                entity.Property(e => e.StudentPhoto)
-                    .HasColumnName("student_photo")
-                    .HasMaxLength(1);
+                entity.Property(e => e.StudentPhoto).HasColumnName("student_photo");
             });
 
             modelBuilder.Entity<Teachers>(entity =>
@@ -281,9 +318,7 @@ namespace Eduraise.Models
                     .HasColumnName("teacher_password")
                     .HasMaxLength(20);
 
-                entity.Property(e => e.TeacherPhoto)
-                    .HasColumnName("teacher_photo")
-                    .HasColumnType("image");
+                entity.Property(e => e.TeacherPhoto).HasColumnName("teacher_photo");
             });
 
             modelBuilder.Entity<Tests>(entity =>
@@ -292,14 +327,18 @@ namespace Eduraise.Models
 
                 entity.Property(e => e.TestId).HasColumnName("test_id");
 
-                entity.Property(e => e.Answers)
-                    .HasColumnName("answers")
+                entity.Property(e => e.BlockId).HasColumnName("block_id");
+
+                entity.Property(e => e.Content)
+                    .IsRequired()
+                    .HasColumnName("content")
                     .HasColumnType("text");
 
-                entity.Property(e => e.Question)
-                    .IsRequired()
-                    .HasColumnName("question")
-                    .HasColumnType("text");
+                entity.HasOne(d => d.Block)
+                    .WithMany(p => p.Tests)
+                    .HasForeignKey(d => d.BlockId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Tests_Block");
             });
 
             OnModelCreatingPartial(modelBuilder);

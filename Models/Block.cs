@@ -8,6 +8,7 @@ namespace Eduraise.Models
         public Block()
         {
             Lessons = new HashSet<Lessons>();
+            Tests = new HashSet<Tests>();
         }
 
         public int BlockId { get; set; }
@@ -17,5 +18,6 @@ namespace Eduraise.Models
 
         public virtual Courses Course { get; set; }
         public virtual ICollection<Lessons> Lessons { get; set; }
+        public virtual ICollection<Tests> Tests { get; set; }
     }
 }

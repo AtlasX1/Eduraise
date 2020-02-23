@@ -22,71 +22,61 @@ namespace Eduraise.Controllers
 		{
 			var optionsBuilder = new DbContextOptionsBuilder<EduraiseContext>();
 			var options = optionsBuilder
-				.UseSqlServer(@"Data Source=Computer;Initial Catalog=Eduraise;integrated security=True;MultipleActiveResultSets=True;App=EntityFramework")
+				.UseSqlServer(@"Data Source=COMPUTER\SQLEXPRESS;Initial Catalog=Eduraise;Integrated Security=True")
 				.Options;
 			_context = new EduraiseContext(options);
 			}
-        [HttpPost("/token")]
-        public IActionResult Token([FromForm] Admins user)
-        {
-            var identity = GetIdentity(user.AdminEmail, user.AdminPassword);
-            if (identity == null)
-            {
-                return BadRequest(new { errorText = "Invalid username or password." });
-            }
 
-            var now = DateTime.UtcNow;
+		[HttpPost("/token")]
+		public IActionResult Token([FromForm] Admins admin)
+		{
+			var identity = GetIdentity(admin.AdminEmail, admin.AdminPassword);
+			if (identity == null)
+			{
+				return BadRequest(new { errorText = "Invalid username or password." });
+			}
 
-            var jwt = new JwtSecurityToken(
-                issuer: AuthOptions.ISSUER,
-                audience: AuthOptions.AUDIENCE,
-                notBefore: now,
-                claims: identity.Claims,
-                expires: now.Add(TimeSpan.FromMinutes(AuthOptions.LIFETIME)),
-                signingCredentials: new SigningCredentials(AuthOptions.GetSymmetricSecurityKey(), SecurityAlgorithms.HmacSha256));
-            var encodedJwt = new JwtSecurityTokenHandler().WriteToken(jwt);
+			var now = DateTime.UtcNow;
 
-            var response = new
-            {
-                access_token = encodedJwt,
-                username = identity.Name,
-                role = identity.RoleClaimType
-            };
+			var jwt = new JwtSecurityToken(
+				issuer: AuthOptions.ISSUER,
+				audience: AuthOptions.AUDIENCE,
+				notBefore: now,
+				claims: identity.Claims,
+				expires: now.Add(TimeSpan.FromMinutes(AuthOptions.LIFETIME)),
+				signingCredentials: new SigningCredentials(AuthOptions.GetSymmetricSecurityKey(), SecurityAlgorithms.HmacSha256));
+			var encodedJwt = new JwtSecurityTokenHandler().WriteToken(jwt);
 
-            return Json(response);
-        }
+			var response = new
+			{
+				access_token = encodedJwt,
+				username = identity.Name
+			};
 
-        private ClaimsIdentity GetIdentity(string username, string password)
-        {
-            var person = new object();
-            person = null;
-            string role = null;
-            if (_context.Admins.FirstOrDefault(up => up.AdminEmail.Contains(username)) != null)
-            {
-                person = _context.Admins.FirstOrDefault(x => x.AdminEmail == username && x.AdminPassword == password);
-                role = "Admin";
-            }
-            else if (_context.Teachers.FirstOrDefault(up => up.TeacherEmail.Contains(username)) != null)
-            {
-                person = _context.Teachers.FirstOrDefault(x => x.TeacherEmail == username && x.TeacherPassword == password);
-                role = "Teacher";
-            }
-            else if (_context.Students.FirstOrDefault(up => up.StudentEmail.Contains(username)) != null)
-            {
-                person = _context.Students.FirstOrDefault(x => x.StudentEmail == username && x.StudentPassword == password);
-                role = "Student";
-            }
+			return Json(response);
+		}
 
-            if (person != null)
-            {
-                var claims = new List<Claim> { new Claim(ClaimsIdentity.DefaultNameClaimType, username) };
+		private ClaimsIdentity GetIdentity(string username, string password)
+		{
+		
+			
+			var person = _context.Admins.FirstOrDefault(x => x.AdminEmail == username && x.AdminPassword==password);
 
-                ClaimsIdentity claimsIdentity =
-                    new ClaimsIdentity(claims, "Token", ClaimsIdentity.DefaultNameClaimType, role);
-                return claimsIdentity;
-            }
+			if (person != null)
+			{
+				var claims = new List<Claim>
+				{
+				new Claim(ClaimsIdentity.DefaultNameClaimType, person.AdminEmail)
 
-            return null;
-        }
-    }
+				};
+				ClaimsIdentity claimsIdentity =
+				new ClaimsIdentity(claims, "Token", ClaimsIdentity.DefaultNameClaimType,
+				ClaimsIdentity.DefaultRoleClaimType);
+				return claimsIdentity;
+			}
+
+
+			return null;
+		}
+	}
 }

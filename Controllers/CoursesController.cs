@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Eduraise.Models;
+using Microsoft.AspNetCore.Cors;
 
 namespace Eduraise.Controllers
 {
@@ -17,12 +18,7 @@ namespace Eduraise.Controllers
 
         public CoursesController(EduraiseContext context)
         {
-	        var optionsBuilder = new DbContextOptionsBuilder<EduraiseContext>();
-	        var options = optionsBuilder
-		        .UseSqlServer(@"Data Source=Computer;Initial Catalog=Eduraise;integrated security=True;MultipleActiveResultSets=True;App=EntityFramework")
-		        .Options;
-
-	        _context = new EduraiseContext(options);
+            _context = context;
         }
 
         // GET: api/Courses
@@ -99,20 +95,20 @@ namespace Eduraise.Controllers
         [HttpPost]
         public async Task<ActionResult<Courses>> PostCourses(Courses courses)
         {
-	        _context.Courses.Add(courses);
-	        _context.Block.AddRange(courses.Block);
-	        foreach (var b in courses.Block)
-	        {
-		        b.CourseId = courses.CourseId;
-		        _context.Lessons.AddRange(b.Lessons);
-		        foreach (var l in b.Lessons)
-			        l.BlockId = b.BlockId;
-	        }
+            _context.Courses.Add(courses);
+            _context.Block.AddRange(courses.Block);
+            foreach(var b in courses.Block)
+            {
+                b.CourseId = courses.CourseId;
+                _context.Lessons.AddRange(b.Lessons);
+                    foreach (var l in b.Lessons)
+                        l.BlockId = b.BlockId;
+            }
             await _context.SaveChangesAsync();
 
             //make a post request to form the block body and then to form a lesson body
             //The name of the action to use for generating the URL.
-            //The route data to use for generating the URL.
+            // The route data to use for generating the URL.
             //The content value to format in the entity body.
             return CreatedAtAction("GetCourses", new { id = courses.CourseId }, courses);
         }
