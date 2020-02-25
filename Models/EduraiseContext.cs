@@ -34,7 +34,7 @@ namespace Eduraise.Models
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-                optionsBuilder.UseSqlServer("Server=COMPUTER\\SQLEXPRESS;Initial Catalog=Eduraise;Integrated Security=True;");
+                optionsBuilder.UseSqlServer("Server=COMPUTER;Initial Catalog=Eduraise;Integrated Security=True;");
             }
         }
 
@@ -64,12 +64,11 @@ namespace Eduraise.Models
                 entity.HasKey(e => e.AnswerId);
 
                 entity.Property(e => e.AnswerId)
-                    .HasColumnName("answer_id")
-                    .ValueGeneratedNever();
+	                .HasColumnName("answer_id");
 
                 entity.Property(e => e.Content)
                     .IsRequired()
-                    .HasColumnName("[content]")
+                    .HasColumnName("answer_content")
                     .HasColumnType("text");
 
                 entity.Property(e => e.IsCorrect).HasColumnName("is_correct");
@@ -244,12 +243,11 @@ namespace Eduraise.Models
                 entity.HasKey(e => e.QuestionId);
 
                 entity.Property(e => e.QuestionId)
-                    .HasColumnName("question_id")
-                    .ValueGeneratedNever();
+	                .HasColumnName("question_id");
 
                 entity.Property(e => e.Content)
                     .IsRequired()
-                    .HasColumnName("[content]")
+                    .HasColumnName("question_content")
                     .HasColumnType("text");
 
                 entity.Property(e => e.TestId).HasColumnName("test_id");
@@ -331,7 +329,7 @@ namespace Eduraise.Models
 
                 entity.Property(e => e.Content)
                     .IsRequired()
-                    .HasColumnName("content")
+                    .HasColumnName("test_content")
                     .HasColumnType("text");
 
                 entity.HasOne(d => d.Block)

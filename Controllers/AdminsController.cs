@@ -17,13 +17,13 @@ namespace Eduraise.Controllers
 
         public AdminsController(EduraiseContext context)
         {
-            var optionsBuilder = new DbContextOptionsBuilder<EduraiseContext>();
-            var options = optionsBuilder
-                .UseSqlServer(@"Data Source=COMPUTER\SQLEXPRESS;Initial Catalog=Eduraise;Integrated Security=True")
-                .Options;
-  
-            _context = new EduraiseContext(options);
-         
+	        var optionsBuilder = new DbContextOptionsBuilder<EduraiseContext>();
+	        var options = optionsBuilder
+		        .UseSqlServer(@"Data Source=COMPUTER\MSSQLSERVER01;Initial Catalog=Eduraise;Integrated Security=True")
+		        .Options;
+
+	        _context = new EduraiseContext(options);
+
         }
 
         // GET: api/Admins
