@@ -202,7 +202,7 @@ namespace Eduraise.Models
 
                 entity.Property(e => e.Content)
                     .IsRequired()
-                    .HasColumnName("content")
+                    .HasColumnName("lesson_content")
                     .HasColumnType("text");
 
                 entity.Property(e => e.LessonName)
@@ -243,7 +243,7 @@ namespace Eduraise.Models
                 entity.HasKey(e => e.QuestionId);
 
                 entity.Property(e => e.QuestionId)
-	                .HasColumnName("question_id");
+                    .HasColumnName("question_id");
 
                 entity.Property(e => e.Content)
                     .IsRequired()
