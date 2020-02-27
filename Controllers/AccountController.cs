@@ -20,12 +20,7 @@ namespace Eduraise.Controllers
 
 		public AccountController(EduraiseContext context)
 		{
-			var optionsBuilder = new DbContextOptionsBuilder<EduraiseContext>();
-			var options = optionsBuilder
-				.UseSqlServer(@"Data Source=COMPUTER\MSSQLSERVER01;Initial Catalog=Eduraise;Integrated Security=True")
-				.Options;
-
-			_context = new EduraiseContext(options);
+			_context = context;
 		}
 
 		[HttpPost("/token")]
@@ -51,7 +46,8 @@ namespace Eduraise.Controllers
 			var response = new
 			{
 				access_token = encodedJwt,
-				username = identity.Name
+				username = identity.Name,
+				role = identity.RoleClaimType
 			};
 
 			return Json(response);
@@ -59,23 +55,33 @@ namespace Eduraise.Controllers
 
 		private ClaimsIdentity GetIdentity(string username, string password)
 		{
-		
-			
-			var person = _context.Admins.FirstOrDefault(x => x.AdminEmail == username && x.AdminPassword==password);
+			var person = new object();
+			person = null;
+			string role = null;
+			if (_context.Admins.FirstOrDefault(up => up.AdminEmail.Contains(username)) != null)
+			{
+				person = _context.Admins.FirstOrDefault(x => x.AdminEmail == username && x.AdminPassword == password);
+				role = "Admin";
+			}
+			else if (_context.Teachers.FirstOrDefault(up => up.TeacherEmail.Contains(username)) != null)
+			{
+				person = _context.Teachers.FirstOrDefault(x => x.TeacherEmail == username && x.TeacherPassword == password);
+				role = "Teacher";
+			}
+			else if (_context.Students.FirstOrDefault(up => up.StudentEmail.Contains(username)) != null)
+			{
+				person = _context.Students.FirstOrDefault(x => x.StudentEmail == username && x.StudentPassword == password);
+				role = "Student";
+			}
 
 			if (person != null)
 			{
-				var claims = new List<Claim>
-				{
-				new Claim(ClaimsIdentity.DefaultNameClaimType, person.AdminEmail)
+				var claims = new List<Claim> { new Claim(ClaimsIdentity.DefaultNameClaimType, username) };
 
-				};
 				ClaimsIdentity claimsIdentity =
-				new ClaimsIdentity(claims, "Token", ClaimsIdentity.DefaultNameClaimType,
-				ClaimsIdentity.DefaultRoleClaimType);
+					new ClaimsIdentity(claims, "Token", ClaimsIdentity.DefaultNameClaimType, role);
 				return claimsIdentity;
 			}
-
 
 			return null;
 		}

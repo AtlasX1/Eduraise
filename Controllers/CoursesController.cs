@@ -41,7 +41,12 @@ namespace Eduraise.Controllers
 
             return courses;
         }
-
+        [HttpGet("getAmountOfSubscribers/{course_id}")]
+        public async Task<ActionResult<int>> GetAmountOfSubscribers(int course_id)
+        {
+            var courseStudent = await _context.CourseStudent.Where(el => el.CourseId == course_id).ToListAsync();
+            return courseStudent.Count;
+        }
         // GET: api/Courses/5/Blocks
         [HttpGet("{courseId}/Blocks")]
         public async Task<ActionResult<IEnumerable<Block>>> GetBlocks(int courseId)

@@ -41,7 +41,20 @@ namespace Eduraise.Controllers
             return teachers;
         }
 
-        [HttpGet("{teacher_id}/AllCourses")]
+        [HttpGet("getTeacher/{teacher_email}")]
+        public async Task<ActionResult<IEnumerable<Teachers>>> GetStudent(string teacher_email)
+        {
+            var teachers = await _context.Teachers.Where(el => el.TeacherEmail == teacher_email).ToListAsync();
+
+            if (teachers == null)
+            {
+                return NotFound();
+            }
+
+            return teachers;
+        }
+
+        [HttpGet("getCourses/{teacher_id}")]
         public async Task<ActionResult<IEnumerable<Courses>>> GetTeachersCourses(int teacher_id)
         {
             var courses = await _context.Courses.Where( c => c.TeachersId == teacher_id).ToListAsync();
@@ -49,6 +62,18 @@ namespace Eduraise.Controllers
             return courses;
         }
 
+        [HttpGet("getName/{id}")]
+        public async Task<ActionResult<string>> GetTeachersName(int id)
+        {
+            var teachers = await _context.Teachers.FindAsync(id);
+
+            if (teachers == null)
+            {
+                return NotFound();
+            }
+            var name = teachers.TeacherName;
+            return name;
+        }
         // PUT: api/Teachers/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.

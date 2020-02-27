@@ -48,18 +48,31 @@ namespace Eduraise.Controllers
             return studentCourses;
         }
 
+        [HttpGet("getStudent/{student_email}")]
+        public async Task<ActionResult<IEnumerable<Students>>> GetStudent(string student_email)
+        {
+            var studentId = await _context.Students.Where(up => up.StudentEmail == student_email).ToListAsync();
+
+            if (studentId == null)
+            {
+                return NotFound();
+            }
+
+            return studentId;
+        }
+
         // PUT: api/Students/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutStudents(int id, Students students)
+        [HttpPut("updateStudent/{id}")]
+        public async Task<IActionResult> PutStudent(int id, Students student)
         {
-            if (id != students.StudentId)
+            if (id != student.StudentId)
             {
                 return BadRequest();
             }
 
-            _context.Entry(students).State = EntityState.Modified;
+            _context.Entry(student).State = EntityState.Modified;
 
             try
             {

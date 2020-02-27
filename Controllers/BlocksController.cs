@@ -55,6 +55,20 @@ namespace Eduraise.Controllers
             return lessons;
         }
 
+        // GET: api/Blocks/5/Lessons
+        [HttpGet("{blockId}/Tests")]
+        public async Task<ActionResult<IEnumerable<Tests>>> GetTests(int blockId)
+        {
+            var tests = await _context.Tests.Where(l => l.BlockId == blockId).ToListAsync();
+
+            if (tests == null)
+            {
+                return NotFound();
+            }
+
+            return tests;
+        }
+
         // PUT: api/Blocks/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
