@@ -34,7 +34,7 @@ namespace Eduraise.Models
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-                optionsBuilder.UseSqlServer("Server=COMPUTER;Initial Catalog=Eduraise;Integrated Security=True;");
+                optionsBuilder.UseSqlServer("Server=VOLTER-PC;Initial Catalog=Eduraise;Integrated Security=True;");
             }
         }
 
@@ -225,17 +225,17 @@ namespace Eduraise.Models
 
                 entity.Property(e => e.MarkId).HasColumnName("mark_id");
 
-                entity.Property(e => e.CourseId).HasColumnName("course_id");
+                entity.Property(e => e.TestId).HasColumnName("test_id");
 
                 entity.Property(e => e.StudentId).HasColumnName("student_id");
 
                 entity.Property(e => e.Value).HasColumnName("value");
 
-                entity.HasOne(d => d.Course)
+                entity.HasOne(d => d.Test)
                     .WithMany(p => p.Marks)
-                    .HasForeignKey(d => d.CourseId)
+                    .HasForeignKey(d => d.TestId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Marks_Courses");
+                    .HasConstraintName("FK_Marks_Tests");
             });
 
             modelBuilder.Entity<Questions>(entity =>

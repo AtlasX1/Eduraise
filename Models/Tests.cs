@@ -16,5 +16,6 @@ namespace Eduraise.Models
 
         public virtual Block Block { get; set; }
         public virtual ICollection<Questions> Questions { get; set; }
+        public virtual ICollection<Marks> Marks { get; set; }
     }
 }
