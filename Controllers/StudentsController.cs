@@ -61,6 +61,25 @@ namespace Eduraise.Controllers
             return studentId;
         }
 
+        [HttpGet("isSubscribed/{student_id}/{course_id}")]
+        public async Task<ActionResult<bool>> isSubscribed(int student_id, int course_id)
+        {
+            var subscribed = await _context.CourseStudent.Where(el => el.StudentId == student_id && el.CourseId == course_id).ToListAsync();
+
+            if (subscribed == null)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        [HttpGet("getSubscriptions")] 
+        public async Task<ActionResult<IEnumerable<CourseStudent>>> GetSubscriptions()
+        {
+            return await _context.CourseStudent.ToListAsync();
+        }
+
         // PUT: api/Students/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
@@ -102,7 +121,20 @@ namespace Eduraise.Controllers
             _context.Students.Add(students);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetStudents", new { id = students.StudentId }, students);
+            return CreatedAtAction("GetSubscriptions", new { id = students.StudentId }, students);
+        }
+
+        [HttpPost("addSubscription")]
+        public async Task<IActionResult> PostSubscription(CourseStudent subscription)
+        {
+            CourseStudent newSub = new CourseStudent();
+            newSub.CourseId = subscription.CourseId;
+            newSub.DateOfOverview = DateTime.Now;
+            newSub.StudentId = subscription.StudentId;
+            _context.CourseStudent.Add(newSub);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
         }
 
         // DELETE: api/Students/5
@@ -119,6 +151,22 @@ namespace Eduraise.Controllers
             await _context.SaveChangesAsync();
 
             return students;
+        }
+
+        // DELETE: api/Students/5
+        [HttpDelete("unsubscribe/{student_id}/{course_id}")]
+        public async Task<ActionResult<CourseStudent>> Unsubscribe(int student_id, int course_id)
+        {
+            var subscription = await _context.CourseStudent.Where(el => el.StudentId == student_id && el.CourseId == course_id).ToListAsync();
+            if (subscription == null)
+            {
+                return NotFound();
+            }
+
+            _context.CourseStudent.Remove(subscription[0]);
+            await _context.SaveChangesAsync();
+
+            return subscription[0];
         }
 
         private bool StudentsExists(int id)
